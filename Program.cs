@@ -1,11 +1,12 @@
-﻿// todo Just started fixing an enless do loop in the battle loop section
-// todo I just added the battleDone bool at the top of ==battle 
-
-bool debug = false;
-if (debug) Console.WriteLine("<CODE>");
+﻿bool debug = false;
+if (debug) {
+  Console.WriteLine("|==code==>");
+}
 
 // => Setup
-if (debug) Console.WriteLine("<SETUP>");
+if (debug) {
+  Console.WriteLine("|==setup==>");
+}
 
 // ==> Systems
 Random die = new Random();
@@ -22,20 +23,16 @@ int heroRawLevel = 0;
 int heroRawHealth = 10;
 int heroRawBonus = 0;
 int heroRawArmor = 0;
-string heroStrLevel = $"Level {heroRawLevel}";
-string heroStrHealth = $"{heroRawHealth} HP";
-string heroStrBonus = $"";
-string heroStrArmor = $"";
 int dMinHero = 1;
 int dMaxHero = 11;
 
 // ===> NPC
 int npcRawLevel = 0;
 int npcRawHealth = 10;
-// int npcRawBonus = 0;
+int npcRawBonus = 0;
 int npcRawArmor = 0;
-// int dMinNpc = 1;
-// int dMaxNpc = 11;
+int dMinNpc = 1;
+int dMaxNpc = 11;
 
 // ==> Structure
 string phase0 = "bookend";
@@ -45,21 +42,25 @@ string phase3 = "";
 
 bool gameRunning = true;
 
-if (debug) Console.WriteLine("</SETUP>");
-
-//==================================================
+if (debug) {
+  Console.WriteLine("==setup==|");
+}
 
 while (gameRunning) { //!! Game Starts
   if (debug) {
-    Console.WriteLine("<GAME-RUNNING>");
+    Console.WriteLine("\n|==gameRunning==>");
   }
 
-  //----- BOOKEND ----------------------------------
-
   while (phase0 == "bookend") {
+    if (debug) {
+      Console.WriteLine("\n|==bookend==>");
+    }
+
     while (phase1 == "gameStart") //=> Title Screen
     {
-      if (debug) Console.WriteLine("\n|==gameStart==>");
+      if (debug) {
+        Console.WriteLine("\n|==bookend.gameStart==>");
+      }
 
       // Console.Clear();
       
@@ -75,12 +76,16 @@ while (gameRunning) { //!! Game Starts
       phase0 = "";
       phase1 = "";
 
-      if (debug) Console.WriteLine("==gameStart==|");
+      if (debug) {
+        Console.WriteLine("==bookend.gameStart==|");
+      }
     }
 
     while (phase1 == "gameEnd") //=> Game Over
     {
-      if (debug) Console.WriteLine("\n|==gameEnd==>");
+      if (debug) {
+        Console.WriteLine("\n|==bookend.gameEnd==>");
+      }
 
       Console.WriteLine($"Game Over");
       Console.WriteLine($"Press enter to End");
@@ -88,19 +93,28 @@ while (gameRunning) { //!! Game Starts
       Console.ReadLine();
 
       gameRunning = false;
+      phase0 = "";
       phase1 = "";
 
-      if (debug) Console.WriteLine("==gameEnd==|");
+      if (debug) {
+        Console.WriteLine("==bookend.gameEnd==|");
+      }
+    }
+    
+    if (debug) {
+      Console.WriteLine("==bookend==|");
     }
   }
 
-  //----- SYSTEMS ----------------------------------
-
   while (phase0 == "system") {
+    if (debug) {
+      Console.WriteLine("\n|==system==>");
+    }
+
     while (phase1 == "battle") { //=> Battle
       if (debug) 
       {
-        Console.WriteLine("\n|==battle==>");
+        Console.WriteLine("\n|==system.battle==>");
       }
 
       bool battleDone = false;
@@ -115,7 +129,7 @@ while (gameRunning) { //!! Game Starts
 
       while (phase2 == "") { //==> Battle Setup
         if (debug) {
-          Console.WriteLine("\n|==battle.setup==>");
+          Console.WriteLine("\n|==system.battle.setup==>");
         }
 
         battleRound = 0;
@@ -133,19 +147,21 @@ while (gameRunning) { //!! Game Starts
         
         phase2 = "loop";
 
-        if (debug) Console.WriteLine("==battle.setup==|");
+        if (debug) {
+          Console.WriteLine("==system.battle.setup==|");
+        }
       }
 
       while (phase2 == "loop" && battleDone == false) { //==> Battle Loop
         if (debug) {
-          Console.WriteLine("\n|==battle.loop==>");
+          Console.WriteLine("\n|==system.battle.loop==>");
         }
 
         phase3 = "";
 
-        while (phase2 == "loop" && dullTurns < 6) {
+        while (phase2 == "loop" && dullTurns < 6) { // Core Battle Loop
           if (debug) {
-            Console.WriteLine("\n|==battle.loop(do)==>");
+            Console.WriteLine("\n|==system.battle.loop(do)==>");
           }
           
           //===> Initialise 1-Round Variables
@@ -169,9 +185,14 @@ while (gameRunning) { //!! Game Starts
 
           while (phase3 == "turnHero") { //===> Hero's Turn
             if (debug) {
-              Console.WriteLine("\n|==battle.loop(do).turnHero==>");
+              Console.WriteLine("\n|==system.battle.loop(do).turnHero==>");
             }
             
+            string heroStrLevel = $"Level {heroRawLevel}";
+            string heroStrHealth = $"{heroRawHealth} HP";
+            string heroStrBonus = $"";
+            string heroStrArmor = $"";
+
             Console.WriteLine(lineDiv);
             Console.WriteLine("Hero's Turn");
             Console.WriteLine($"{heroStrLevel} • {heroStrHealth}");
@@ -222,32 +243,77 @@ while (gameRunning) { //!! Game Starts
             phase3 = "checkHp";
           
             if (debug) {
-              Console.WriteLine("\n==battle.loop(do).turnHero==|");
+              Console.WriteLine("\n==system.battle.loop(do).turnHero==|");
             }
           }
 
           while (phase3 == "turnNpc") { //===> NPC's Turn
-            if (debug) Console.WriteLine("\n|==battle.loop(do).turnNpc==>");
+            if (debug) {
+              Console.WriteLine("\n|==system.battle.loop(do).turnNpc==>");
+            }
             
+            // string npcStrLevel = $"Level {npcRawLevel}";
+            string npcStrHealth = $"{npcRawHealth} HP";
+            string npcStrBonus = $"";
+            string npcStrArmor = $"";
+
             Console.WriteLine(lineDiv);
-            Console.WriteLine($"Enemy's Turn");
-            Console.WriteLine($"{npcRawHealth} HP");
-            Console.WriteLine("");
-            Console.WriteLine($"Press enter to defend");
-            
+            Console.WriteLine("Enemy's Turn");
+            Console.WriteLine($"{npcStrHealth}");
+            if (npcRawArmor != 0)
+            {
+              Console.WriteLine(npcStrArmor);
+            }
+            if (npcRawBonus != 0)
+            {
+              Console.WriteLine(npcStrBonus);
+            }
+            Console.WriteLine("Press enter to defend\n");
+
             Console.ReadLine();
 
-            int attack = die.Next(dMinHero, dMaxHero);
+            int roll = die.Next(dMinNpc, dMaxNpc);
+            int attack = roll + npcRawBonus;
+            int damage = attack - heroRawArmor;
+
+            heroRawHealth -= damage;
             hpShift += attack;
+
+            Console.WriteLine($"The enemy rolled {roll}");
+
+            if (attack != roll)
+            {
+              Console.WriteLine($"Their skill of {npcRawBonus} boosts that to {attack}");
+            }
+            if (damage != attack)
+            {
+              Console.WriteLine($"You blocked {heroRawArmor}");
+            }
+            
+            Console.WriteLine /* Damage Taken by Hero */
+            (
+              "You lose " +
+              damage +
+              " HP, leaving you with " +
+              (heroRawHealth > 0 ? heroRawHealth : 0) +
+              " HP"
+            );
 
             lastAction = "npc";
 
+            Console.WriteLine("Continue?");
+            Console.ReadLine();
+
             phase3 = "checkHp";
+
+            if (debug) {
+              Console.WriteLine("==system.battle.loop(do).turnNpc==|");
+            }
           }
 
           while (phase3 == "checkHp") { //===> Check HP
             if (debug) {
-              Console.WriteLine("\n|==battle.loop(do).heroCheck==>");
+              Console.WriteLine("\n|==system.battle.loop(do).hpCheck==>");
             }
             
             Console.WriteLine(lineDiv);
@@ -272,13 +338,13 @@ while (gameRunning) { //!! Game Starts
             phase3 = "checkDull";
 
             if (debug) {
-              Console.WriteLine("\n==battle.loop(do).heroCheck==|");
+              Console.WriteLine("\n==system.battle.loop(do).hpCheck==|");
             }
           }
 
           while (phase3 == "checkDull") { //===> Check for Dull Combat
             if (debug) {
-              Console.WriteLine("\n|==battle.loop(do).checkDull==>");
+              Console.WriteLine("\n|==system.battle.loop(do).checkDull==>");
               Console.WriteLine($"Shift this round: {hpShift}");
             }
 
@@ -288,16 +354,16 @@ while (gameRunning) { //!! Game Starts
               Console.WriteLine($"Null Turns: {dullTurns}.");
             }
 
-            phase3 = "roundEnd";
+            phase3 = "turnEnd";
 
             if (debug) {
-              Console.WriteLine("\n==battle.loop(do).checkDull==|");
+              Console.WriteLine("\n==system.battle.loop(do).checkDull==|");
             }
           }
 
-          while (phase3 == "roundEnd") { //===> Prepare for Next Round
+          while (phase3 == "turnEnd") { //===> Prepare for Next Round
             if (debug) {
-              Console.WriteLine("\n|==battle.loop(do).roundEnd==>");
+              Console.WriteLine("\n|==system.battle.loop(do).turnEnd==>");
             }
             
             Console.WriteLine(lineDiv);
@@ -313,12 +379,12 @@ while (gameRunning) { //!! Game Starts
             }
             
             if (debug) {
-              Console.WriteLine("\n==battle.loop(do).roundEnd==|");
+              Console.WriteLine("\n==system.battle.loop(do).turnEnd==|");
             }
           }
         
           if (debug) {
-            Console.WriteLine("==battle.loop(do)==|");
+            Console.WriteLine("==system.battle.loop(do)==|");
           }
         }
 
@@ -326,13 +392,13 @@ while (gameRunning) { //!! Game Starts
         phase3 = "";
 
         if (debug) {
-          Console.WriteLine("==battle.loop==|");
+          Console.WriteLine("==system.battle.loop==|");
         }
       }
 
       while (phase2 == "result") { //==> Battle Result
         if (debug) {
-          Console.WriteLine("\n|==battle.result==>");
+          Console.WriteLine("\n|==system.battle.result==>");
         }
 
         Console.WriteLine($"You {(battleWon ? "Won" : "Lost")}!");
@@ -345,13 +411,13 @@ while (gameRunning) { //!! Game Starts
         phase3 = "";
 
         if (debug) {
-          Console.WriteLine("==battle.result==|");
+          Console.WriteLine("==system.battle.result==|");
         }
       }
 
       while (phase2 == "end") { //==> End Battle
         if (debug) {
-          Console.WriteLine("\n|==battle.end==>");
+          Console.WriteLine("\n|==system.battle.end==>");
         }
 
         Console.WriteLine(lineDiv);
@@ -360,23 +426,35 @@ while (gameRunning) { //!! Game Starts
         Console.ReadLine();
         // Console.Clear();
 
+        phase0 = "bookend";
         phase1 = "gameEnd";
         phase2 = "";
         phase3 = "";
 
         if (debug) {
-          Console.WriteLine("==battle.end==|");
+          Console.WriteLine("==system.battle.end==|");
         }
       }
     
       if (debug) {
-        Console.WriteLine("==battle==|");
+        Console.WriteLine("==system.battle==|");
       }
     }
 
-    while (phase1 == "levelUp") {} //=> LevelUp
+    while (phase1 == "levelUp") { //=> Level Up
+      if (debug) {
+        Console.Write("|==system.levelUp==>");
+      };
+
+      if (debug) {
+        Console.Write("==system.levelUp==|");
+      };
+    }
+  
+    if (debug) {
+      Console.WriteLine("==system==|");
+    }
   }
-  //----- CATCH ------------------------------------
 
   while (phase0 == "") { //=> Phase Selector
     if (debug) {
@@ -446,13 +524,11 @@ while (gameRunning) { //!! Game Starts
     }
   }
 
-  //-----------------------------------------------
-
   if (debug) {
-    Console.WriteLine("</GAME-RUNNING>");
+    Console.WriteLine("==gameRunning==|");
   }
 }
 
 if (debug) {
-  Console.WriteLine("</CODE>");
+  Console.WriteLine("==code==|");
 }
