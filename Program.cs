@@ -19,18 +19,25 @@ string lineDiv = "----------------------";
 
 // ==> Entities
 // ===> Hero
+string heroName = "Nameless Wanderer";
+
 int heroRawLevel = 0;
 int heroRawHealth = 10;
 int heroRawBonus = 0;
 int heroRawArmor = 0;
+
 int dMinHero = 1;
 int dMaxHero = 11;
 
 // ===> NPC
+string npcName = "";
+string npcArticle = "";
+
 int npcRawLevel = 0;
 int npcRawHealth = 10;
 int npcRawBonus = 0;
 int npcRawArmor = 0;
+
 int dMinNpc = 1;
 int dMaxNpc = 11;
 
@@ -73,8 +80,8 @@ while (gameRunning) { //!! Game Starts
       Console.ReadLine();
       // Console.Clear();
 
-      phase0 = "";
-      phase1 = "";
+      phase0 = "system";
+      phase1 = "heroCreate";
 
       if (debug) {
         Console.WriteLine("==bookend.gameStart==|");
@@ -111,21 +118,60 @@ while (gameRunning) { //!! Game Starts
       Console.WriteLine("\n|==system==>");
     }
 
+    while (phase1 == "heroCreate") { //=> Character Creation
+      if (debug) {
+        Console.WriteLine("|==system.heroCreate==>");
+      }
+
+      string? readName;
+      string? readSkill;
+
+      Console.WriteLine("What is Your Name?");
+      do {
+          readName = Console.ReadLine();
+      } while (readName == null);
+      heroName = readName;
+
+      Console.WriteLine("What is your greatest strength?");
+      Console.WriteLine("1. I'm quick and skilful");
+      Console.WriteLine("2. I never give up");
+      do {
+        Console.WriteLine("Type 1 or 2, then press enter");
+        readSkill = Console.ReadLine();
+      } while (readSkill == null || (readSkill != "1" && readSkill != "2"));
+      
+      if (readSkill == "1") {
+        heroRawBonus++;
+        Console.WriteLine($"You add {heroRawBonus} to your attack rolls");
+      }
+      else if (readSkill == "2") {
+        heroRawArmor++;
+        Console.WriteLine($"You block {heroRawArmor} of damage");
+      }
+
+      phase0 = "";
+      phase1 = "";
+
+      if (debug) {
+        Console.WriteLine(">==system.heroCreate==|");
+      }
+    }
+
     while (phase1 == "battle") { //=> Battle
       if (debug) 
       {
         Console.WriteLine("\n|==system.battle==>");
       }
 
-      bool battleDone = false;
-      bool battleWon = false;
-
-      /* Possible States
+      /* Possible Battle States
         |  done |  won | Won     |
         | !done | !won | Ongoing |
         |  done | !won | Lost    |
         | !done |  won | Error   |
       */
+
+      bool battleDone = false;
+      bool battleWon = false;
 
       while (phase2 == "") { //==> Battle Setup
         if (debug) {
@@ -134,12 +180,49 @@ while (gameRunning) { //!! Game Starts
 
         battleRound = 0;
         dullTurns = 0;
+
+        int rollName = die.Next(1, 7);
+        int rollLevel = die.Next(1, 4);
+        int rollBonus = die.Next(1, 3);
         
-        npcRawLevel = heroRawLevel;
-        npcRawHealth = 10 + npcRawLevel;
+        switch (rollLevel) {
+          case 1:
+          case 2:
+            npcRawLevel = heroRawLevel - 1;
+            break;
+          case 5:
+          case 6:
+            npcRawLevel = heroRawLevel + 1;
+            break;
+          default:
+            npcRawLevel = heroRawLevel;
+            break;
+        }
+        npcRawHealth += npcRawLevel;
+        if (rollBonus == 1) {
+          npcRawBonus += npcRawLevel;
+        }
+        else if (rollBonus == 2) {
+          npcRawArmor += npcRawLevel;
+        }
+        
+        string compare;
+        if (npcRawLevel > heroRawLevel) {
+          compare = "stronger than you";
+        }
+        else if (npcRawLevel < heroRawLevel) {
+          compare = "weaker than you";
+        }
+        else {
+          compare = "like a good match";
+        }
+
+        npcName = "Beast";
+        npcArticle = "a";
 
         Console.WriteLine(lineGo);
-        Console.WriteLine($"A level {npcRawLevel} monster appears!");
+        Console.WriteLine($"Suddenly, {npcArticle} {npcName} appears!");
+        Console.WriteLine($"They seem {compare}...");
         Console.WriteLine($"Press enter to start battle");
 
         Console.ReadLine();
@@ -194,7 +277,7 @@ while (gameRunning) { //!! Game Starts
             string heroStrArmor = $"";
 
             Console.WriteLine(lineDiv);
-            Console.WriteLine("Hero's Turn");
+            Console.WriteLine($"{heroName}'s Turn");
             Console.WriteLine($"{heroStrLevel} • {heroStrHealth}");
             if (heroRawArmor != 0)
             {
@@ -226,13 +309,7 @@ while (gameRunning) { //!! Game Starts
               Console.WriteLine($"The enemy blocked {npcRawArmor}");
             }
             
-            Console.WriteLine /* Damage Taken by Enemy */
-            (
-              "The enemy loses " +
-              damage +
-              " HP, leaving it with " +
-              (npcRawHealth > 0 ? npcRawHealth : 0) +
-              " HP"
+            Console.WriteLine($"The {npcName} loses {damage} HP, leaving it with {(npcRawHealth > 0 ? npcRawHealth : 0)} HP"
             );
 
             lastAction = "hero";
@@ -254,17 +331,17 @@ while (gameRunning) { //!! Game Starts
             
             // string npcStrLevel = $"Level {npcRawLevel}";
             string npcStrHealth = $"{npcRawHealth} HP";
-            string npcStrBonus = $"";
-            string npcStrArmor = $"";
+            string npcStrBonus = $"It adds {npcRawBonus} to its attacks.";
+            string npcStrArmor = $"It can block {npcRawArmor}.";
 
             Console.WriteLine(lineDiv);
-            Console.WriteLine("Enemy's Turn");
+            Console.WriteLine($"{npcName}'s Turn");
             Console.WriteLine($"{npcStrHealth}");
-            if (npcRawArmor != 0)
+            if (npcRawArmor > 0)
             {
               Console.WriteLine(npcStrArmor);
             }
-            if (npcRawBonus != 0)
+            if (npcRawBonus > 0)
             {
               Console.WriteLine(npcStrBonus);
             }
@@ -279,7 +356,7 @@ while (gameRunning) { //!! Game Starts
             heroRawHealth -= damage;
             hpShift += attack;
 
-            Console.WriteLine($"The enemy rolled {roll}");
+            Console.WriteLine($"The {npcName} rolled {roll}");
 
             if (attack != roll)
             {
@@ -290,13 +367,7 @@ while (gameRunning) { //!! Game Starts
               Console.WriteLine($"You blocked {heroRawArmor}");
             }
             
-            Console.WriteLine /* Damage Taken by Hero */
-            (
-              "You lose " +
-              damage +
-              " HP, leaving you with " +
-              (heroRawHealth > 0 ? heroRawHealth : 0) +
-              " HP"
+            Console.WriteLine ($"You lose {damage} HP, leaving you with {(heroRawHealth > 0 ? heroRawHealth : 0)} HP"
             );
 
             lastAction = "npc";
@@ -315,8 +386,6 @@ while (gameRunning) { //!! Game Starts
             if (debug) {
               Console.WriteLine("\n|==system.battle.loop(do).hpCheck==>");
             }
-            
-            Console.WriteLine(lineDiv);
             
             if (heroRawHealth <= 0 || npcRawHealth <= 0) {
               if (debug) {
@@ -365,11 +434,6 @@ while (gameRunning) { //!! Game Starts
             if (debug) {
               Console.WriteLine("\n|==system.battle.loop(do).turnEnd==>");
             }
-            
-            Console.WriteLine(lineDiv);
-            Console.WriteLine($"Continue?");
-
-            Console.ReadLine();
 
             if (lastAction == "hero") {
               phase3 = "turnNpc";
@@ -472,7 +536,8 @@ while (gameRunning) { //!! Game Starts
       Console.WriteLine($"\n==phaseSelector.logic.gameRunning==>");
     }
 
-    if (!gameRunning) break;
+    if (!gameRunning)
+      break;
 
     if (debug) {
       Console.WriteLine($"==phaseSelector.logic.gameRunning==|");
