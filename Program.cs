@@ -1,16 +1,10 @@
-﻿// string animalSpecies = "";
-// string animalID = "";
-// string animalAge = "";
-// string animalPhysicalDescription = "";
-// string animalPersonalityDescription = "";
-// string animalNickname = "";
-
-string animalSpecies;
-string animalID;
-string animalAge;
-string animalPhysicalDescription;
-string animalPersonalityDescription;
-string animalNickname;
+﻿//=> Declare Variables
+string animalSpecies = "";
+string animalID = "";
+string animalAge = "";
+string animalPhysicalDescription = "";
+string animalPersonalityDescription = "";
+string animalNickname = "";
 
 int maxPets = 8;
 string? readResult;
@@ -18,7 +12,8 @@ string menuSelection = "";
 
 string[,] ourAnimals = new string[maxPets, 6];
 
-for (int i = 0; i < maxPets; i++) //=> Populate Array
+//=> Populate Array
+for (int i = 0; i < maxPets; i++)
 {
   switch (i)
   {
@@ -72,7 +67,8 @@ for (int i = 0; i < maxPets; i++) //=> Populate Array
   ourAnimals[i, 5] = "Personality: " + animalPersonalityDescription;
 }
 
-do //=> Menu Loop
+//=> Menu Loop
+do
 {
   Console.Clear();
 
@@ -90,12 +86,15 @@ do //=> Menu Loop
 
   readResult = Console.ReadLine();
   if (readResult != null)
-    menuSelection = readResult.ToLower();
-
-  Console.WriteLine($"You selected menu option {menuSelection}.");
-  Console.WriteLine("Press the Enter key to continue");
-
-  readResult = Console.ReadLine();
+    {
+      menuSelection = readResult.ToLower();
+      if (readResult != "exit")
+      {
+        Console.WriteLine($"You selected menu option {menuSelection}.");
+        Console.WriteLine("Press the Enter key to continue");
+        readResult = Console.ReadLine();
+      }
+    }
 
   switch (menuSelection)
   {
@@ -118,9 +117,129 @@ do //=> Menu Loop
       readResult = Console.ReadLine();
       break;
     case "2": //==> Add a new animal friend to the ourAnimals array
-      Console.WriteLine("this app feature is coming soon - please check back to see progress.");
-      Console.WriteLine("Press the Enter key to continue.");
-      readResult = Console.ReadLine();
+      string anotherPet = "y";
+      int petCount = 0;
+
+      for (int i = 0; i < maxPets; i++)
+      {
+        if (ourAnimals[i, 0] != "ID #: ")
+        {
+          petCount++;
+        }
+      }
+
+      if (petCount < maxPets) //===> Display # of pets
+      {
+        Console.WriteLine($"We currently have {petCount} pets that need homes.");
+        Console.WriteLine($"We can manage {(maxPets - petCount)} more.");
+      }
+
+      /* Create Pet */ while (anotherPet == "y" && petCount < maxPets)
+      {
+        bool validEntry = false;
+        /* Input Species */ do
+        {
+          Console.WriteLine("\n\rEnter 'dog' or 'cat' to begin a new entry");
+          readResult = Console.ReadLine();
+          if (readResult != null)
+            animalSpecies = readResult.ToLower();
+
+          if (animalSpecies != "dog" && animalSpecies != "cat")
+            validEntry = false;
+          else
+            validEntry = true;
+        } while (validEntry == false);
+
+        /* Derive ID */ animalID = animalSpecies.Substring(0, 1) + (petCount + 1).ToString();
+
+        /* Input Age */ do
+        {
+          int petAge;
+
+          Console.WriteLine("Enter the pet's age or enter ? if unknown");
+          readResult = Console.ReadLine();
+
+          if (readResult != null)
+            animalAge = readResult;
+
+          if (animalAge != "?")
+            //!! THIS LINE IS FUCKING CLEVER
+            validEntry = int.TryParse(animalAge, out petAge);
+          else
+            validEntry = true;
+
+        } while (validEntry == false);
+
+        /* Input Appearance */ do
+        {
+          Console.WriteLine("Enter a physical description of the pet (size, color, gender, weight, housebroken)");
+          readResult = Console.ReadLine();
+          if (readResult != null)
+          {
+            animalPhysicalDescription = readResult.ToLower();
+            if (animalPhysicalDescription == "")
+            {
+              animalPhysicalDescription = "tbd";
+            }
+          }
+        } while (animalPhysicalDescription == "");
+
+        /* Input Personality */ do
+        {
+          Console.WriteLine("Enter a description of the pet's personality (likes or dislikes, tricks, energy level)");
+          readResult = Console.ReadLine();
+          if (readResult != null)
+          {
+            animalPersonalityDescription = readResult.ToLower();
+            if (animalPersonalityDescription == "")
+            {
+              animalPersonalityDescription = "tbd";
+            }
+          }
+        } while (animalPersonalityDescription == "");
+        
+        /* Input Nickname */ do
+        {
+          Console.WriteLine("Enter a nickname for the pet");
+          readResult = Console.ReadLine();
+          if (readResult != null)
+          {
+            animalNickname = readResult.ToLower();
+            if (animalNickname == "")
+            {
+              animalNickname = "tbd";
+            }
+          }
+        } while (animalNickname == "");
+
+        ourAnimals[petCount, 0] = "ID #: " + animalID;
+        ourAnimals[petCount, 1] = "Species: " + animalSpecies;
+        ourAnimals[petCount, 2] = "Age: " + animalAge;
+        ourAnimals[petCount, 3] = "Nickname: " + animalNickname;
+        ourAnimals[petCount, 4] = "Physical description: " + animalPhysicalDescription;
+        ourAnimals[petCount, 5] = "Personality: " + animalPersonalityDescription;
+
+        petCount++;
+
+        /* Add Another Pet? */ if (petCount < maxPets)
+        {
+          Console.WriteLine("Do you want to enter info for another pet (y/n)");
+          do
+          {
+            readResult = Console.ReadLine();
+            if (readResult != null)
+              anotherPet = readResult.ToLower();
+          } while (anotherPet != "y" && anotherPet != "n");
+        }
+      }
+      
+      /* Too many pets */ if (petCount >= maxPets)
+      {
+        Console.WriteLine("We have reached our limit on the number of pets that we can manage.");
+        Console.WriteLine("Press the Enter key to continue.");
+        readResult = Console.ReadLine();
+      }
+
       break;
     case "3": //==> Ensure animal ages and physical descriptions are complete
       Console.WriteLine("this app feature is coming soon - please check back to see progress.");
