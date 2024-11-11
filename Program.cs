@@ -174,7 +174,7 @@ do //=> Main Loop
           }
         }
 
-        if (petCount < maxPets) //===> Display # of pets
+        /* Display # of pets */ if (petCount < maxPets)
         {
           Console.WriteLine($"We currently have {petCount} pets that need homes.");
           Console.WriteLine($"We can manage {(maxPets - petCount)} more.");
@@ -213,7 +213,6 @@ do //=> Main Loop
               validEntry = int.TryParse(animalAge, out petAge);
             else
               validEntry = true;
-
           } while (validEntry == false);
 
           /* Input Appearance */ do
@@ -289,20 +288,24 @@ do //=> Main Loop
         phase = "menu";
         break;
       case "3": //===> Ensure animal ages and physical descriptions are complete
-        for (int i = 0; i < maxPets; i++) // Loop through ourAnimals
+        bool goBack = false; //todo combine this with phase
+        Console.WriteLine("=== Update Pet Details ===");
+        for (int i = 0; i < maxPets; i++) /* Loop through ourAnimals */
         {
-          if (ourAnimals[i, 0] != "ID #: ") // Find pets with IDs
+          if (ourAnimals[i, 0] != "ID #: " && !goBack) /* Find pets with IDs */ 
           {
             Console.WriteLine(div1);
+
             bool valid = false;
             bool validAge = false;
             bool validDesc = false;
 
             string iId = ourAnimals[i, 0].Substring(6);
             string iAge = ourAnimals[i, 2].Substring(5);
+            string iName = ourAnimals[i, 3];
             string iDesc = ourAnimals[i, 4].Substring(22);
 
-            do // Display status of animal data
+            do /* Display status of animal data */
             {
               if (iAge != "?" && int.TryParse(iAge, out int age) && age >= 0 && age <= 30)
                 validAge = true;
@@ -311,75 +314,98 @@ do //=> Main Loop
               if (validAge && validDesc)
                 valid = true;
 
-              Console.WriteLine($"Pet #{iId} {(valid ? "is up to date" : "needs updates")}");
+              Console.WriteLine($"{iName} (#{iId}) {(valid ? "is up to date" : "needs updates")}");
 
-              while (valid == false) // Further Info on Invalid Data
+              while (valid == false && !goBack) /* Further Info on Invalid Data */
               {
-                int menuOption = 0;
+                int options = 0;
                 string optionAge = "";
                 string optionDesc = "";
-                string? optionChose = "";
                 string updateCurrent = "";
                 
                 Console.WriteLine(div1);
-                while (updateCurrent == "") // List Options
+                while (updateCurrent == "" && !goBack) // List Options
                 {
                   Console.WriteLine($"Updates Required");
                   if (!validAge)
                   {
-                    menuOption++;
-                    optionAge = menuOption.ToString();
-                    Console.WriteLine($"  {menuOption}. Age");
+                    options++;
+                    optionAge = options.ToString();
+                    Console.WriteLine($"  {optionAge}. Age");
                   }
                   if (!validDesc)
                   {
-                    menuOption++;
-                    optionDesc = menuOption.ToString();
-                    Console.WriteLine($"  {menuOption}. Physical Description");
+                    options++;
+                    optionDesc = options.ToString();
+                    Console.WriteLine($"  {optionDesc}. Physical Description");
                   }
                   
                   Console.WriteLine("Type a number to choose an option, then press Enter");
+                  Console.WriteLine("Type exit to go back to the main menu");
 
-                  optionChose = Console.ReadLine();
+                  string? optionChose = Console.ReadLine();
 
                   if (optionChose == optionAge || optionChose == optionDesc)
                     updateCurrent = optionChose.ToLower();
+                  else if (optionChose == "exit")
+                    goBack = true;
                 }
 
-                if (updateCurrent == optionAge) // Update Age
+                if (updateCurrent == optionAge) /* Update Age */
                 {
-                  while (!validAge && updateCurrent == optionAge)
+                  while (!validAge)
                   {
-                    //todo animalAge: Ensure valid numeric value assigned for all animals in the ourAnimals with data.
-                    //todo animalAge: Convert the value entered to numeric data type.
+                    Console.WriteLine("Enter the pet's age");
+                    readResult = Console.ReadLine();
+                    if (readResult != null) /* Check input & assign to pet */
+                    {
+                      validAge = int.TryParse(readResult, out int petAge) && petAge >= 0 && petAge <= 30;
+                      if (validAge)
+                      {
+                        ourAnimals[i, 2] = $"Age: {petAge}";
+                      }
+                    }
+                    else
+                    {
+                      Console.WriteLine("Invalid Input");
+                    }
                   }
-                  validAge = true;
+                  updateCurrent = "";
                 }
-                else if (updateCurrent == optionDesc) // Update Description
+                else if (updateCurrent == optionDesc) /* Update Description */
                 {
-                  while (!validDesc && updateCurrent == optionDesc) {
-                    //todo Ensure valid string assigned for all animals in ourAnimals with data.
-                    //todo Values cannot be null
-                    //todo Values cannot have zero characters
-                    //todo Any further restriction is up to the developer
-                    //todo Pause to inform the application user when all data requirements are met
+                  while (!validDesc) {
+                    Console.WriteLine("Write a brief description of your pet's appearance");
+                    readResult = Console.ReadLine();
+                    if (readResult != null) /* Check input & assign to pet */
+                    {
+                      validDesc = readResult.Length != 0;
+                      if (validDesc)
+                      {
+                        ourAnimals[i, 4] = $"Physical Description: {readResult}";
+                      }
+                    }
+                    else
+                    {
+                      Console.WriteLine("Invalid Input");
+                    }
                   }
-                  validDesc = true;
+                  updateCurrent = "";
                 }
                 
-                if (validAge && validDesc) // Confirm info is valid
+                if (!goBack && validAge && validDesc) // Confirm info is valid
                 {
                   valid = true;
                   Console.WriteLine("Pet is up to date");
                   Console.WriteLine("Press Enter to continue");
                   Console.ReadLine();
+                  Console.WriteLine(div1);
                 }
               }
-            } while (valid == false);
+            } while (valid == false && !goBack);
           }
         }
-        Console.WriteLine("Press the Enter key to continue.");
-        Console.ReadLine();
+        goBack = false;
         phase = "menu";
         break;
       case "4": //===> Ensure animal nicknames and personality descriptions are complete
@@ -411,5 +437,4 @@ do //=> Main Loop
         break;
     }
   }
-  
 } while (menuSelection != "exit");
